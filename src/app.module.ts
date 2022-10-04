@@ -4,7 +4,9 @@ import { AuthModule } from './auth/auth.module';
 import { UserService } from './user/user.service';
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://docker:mongopw@localhost:55000'),
+    MongooseModule.forRoot('mongodb://docker:mongopw@localhost:55000', {
+      dbName: "october"
+    }),
     AuthModule,
   ],
   controllers: [],
