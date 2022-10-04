@@ -1,10 +1,12 @@
-import { Date, Document, Model } from 'mongoose';
+import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
+export type UserDocument = User & Document;
+
 @Schema()
-export class User extends Document {
-    @Prop()
-    projectName: "pratical-oct"
+export class User {
+    @Prop({default: "pratical-oct"})
+    projectName: string
     @Prop()
     userAccountName: string
     @Prop()
@@ -13,11 +15,10 @@ export class User extends Document {
     password: string
     @Prop()
     userAvatarSrc: string
-    // @Prop()
-    createTime: {
-        type: Date,
-        default: Date
-    }
+    @Prop({type: String, default: Date.now()})
+    userRecentLogin: number
+    @Prop({type: Number, default: Date.now()})
+    userCreateTime: number
 }
 
 export const userSchema = SchemaFactory.createForClass(User);

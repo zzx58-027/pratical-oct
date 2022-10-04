@@ -10,6 +10,6 @@ import { UserService } from './user/user.service';
     AuthModule,
   ],
   controllers: [],
-  providers: [UserService],
+  providers: [],
 })
 export class AppModule {}

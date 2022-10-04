@@ -1,3 +1,5 @@
+import { EncryptService } from './encrypt/encrypt.service';
+import { UserService } from './../user/user.service';
 import { User, userSchema } from './../user/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
@@ -11,9 +13,9 @@ import { AuthController } from './auth.controller';
         name: User.name,
         schema: userSchema
       }
-  ])
+    ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, UserService, EncryptService],
 })
 export class AuthModule {}
