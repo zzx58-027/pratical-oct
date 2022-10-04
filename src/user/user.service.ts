@@ -10,7 +10,7 @@ import { Model } from "mongoose";
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private encryptService: EncryptService,
+    private readonly encryptService: EncryptService,
     ) {}
 
   findAll() {
@@ -69,4 +69,11 @@ export class UserService {
     const user = await this.userModel.findOneAndUpdate({_id: id}, {userRecentLogin: Date.now()}).exec();
     return user;
   }
+
+  async deleteUserById(id: string) {
+    const user = await this.userModel.findOneAndDelete({_id: id}).exec();
+    return user;
+  }
+
+  
 }

@@ -9,8 +9,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 @Injectable()
 export class AuthService {
     constructor(
-        private userService: UserService,
-        private encryptService: EncryptService,
+        private readonly userService: UserService,
+        private readonly encryptService: EncryptService,
     ) {}
 
     async signUp(createUserDto: CreateUserDto) {
