@@ -1,16 +1,22 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
+import { AuthModule } from "./auth/auth.module";
+import { UserModule } from "./user/user.module";
+import { FsService } from "./fs/fs.service";
+import { PaintingModule } from "./painting/painting.module";
+import { CosNodeService } from "./painting/cos/cos_node.service";
+import { ConfigModule } from "@nestjs/config";
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://docker:mongopw@localhost:55000', {
-      dbName: "october"
+    ConfigModule.forRoot({ cache: true }),
+    MongooseModule.forRoot(process.env.MONGO_DATABASE_URL, {
+      dbName: process.env.USE_DATABASE_BUCKET,
     }),
     AuthModule,
     UserModule,
+    PaintingModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [FsService, CosNodeService],
 })
 export class AppModule {}
