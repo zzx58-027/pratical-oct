@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PaintingService } from './painting.service';
 import { PaintingController } from './painting.controller';
-import { CosService } from './cos/cos.service';
+import { CosNodeService } from './cos/cos_node.service';
 
 @Module({
+  imports: [],
   controllers: [PaintingController],
-  providers: [PaintingService, CosService]
+  providers: [PaintingService, CosNodeService]
 })
 export class PaintingModule {}

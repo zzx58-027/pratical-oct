@@ -1,29 +1,30 @@
 import { Injectable } from "@nestjs/common";
 import * as COS from "cos-nodejs-sdk-v5";
-import fse from "fs-extra";
+import * as fse from "fs-extra"
 
 //对象存储（Cloud Object Storage，COS)
 @Injectable()
 export class CosNodeService {
   private readonly cos: COS;
   private readonly configurations: {
-    secretId: string | undefined,
-    secretKey: string | undefined,
-  }
-  constructor(
-    // private readonly configService: ConfigService
-    ) {
+    secretId: string | undefined;
+    secretKey: string | undefined;
+  };
+  // private readonly configService: ConfigService
+  constructor() {
+  // constructor() {
     this.configurations = {
       secretId: process.env.COS_SecretId,
       secretKey: process.env.COS_SecretKey,
       // secretId: this.configService.get<string>("COS_SecretId"),
       // secretKey: this.configService.get<string>("COS_SecretKey")
-    }
+    };
     this.cos = new COS({
-      SecretId: this.configurations.secretId,
-      SecretKey: this.configurations.secretKey,
+      // SecretId: this.configurations.secretId,
+      // SecretKey: this.configurations.secretKey,
+      SecretId: "AKIDa8GRYQ7gDaouoX5QlGkHh2JQNAnGYcQ2",
+      SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w"
     });
-    this.main();
   }
 
   /* Tips:  
@@ -50,7 +51,7 @@ export class CosNodeService {
   }
 
   //    // SecretId: "AKIDa8GRYQ7gDaouoX5QlGkHh2JQNAnGYcQ2",
-    // SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w",
+  // SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w",
   /**
    * @param  {COS.PutBucketParams} params
    * @returns Promise
@@ -143,6 +144,7 @@ export class CosNodeService {
    * @returns Promise
    * @required Bucket: string, Region: string
    * @optional Prefix: string, Delimiter: string, Marker: marker, MaxKeys: number
+   * @optionsDescrption 
    */
   async getObjectList(
     params: COS.GetBucketParams
@@ -219,14 +221,16 @@ export class CosNodeService {
     const buckets = getBucketsResult.Buckets.filter(
       (item) => item.Name.includes("school-work") === true
     );
-    console.log(buckets);
     if (buckets) {
       const params = {
         Bucket: buckets[0].Name,
         Region: buckets[0].Location,
       };
-      // const objectList = await this.getObjectList(params);
-      // console.log(objectList);
+      const objectList = await this.getObjectList({
+        ...params,
+        Prefix: 'zzx58'
+      });
+      console.log(objectList);
       // if (objectList) {
       //   const { Bucket, Region } = params;
       //   const params1 = {
@@ -246,19 +250,16 @@ export class CosNodeService {
       // const down = await this.cos.downloadFile(fileParams);
       // console.log(down);
 
+      //uploadFile senior method
       // const upload = await this.uploadFile({
       //   ...params,
-      //   Key: '1.png',
-      //   Body: fse.createReadStream("./public/zzinx58.png"),
+      //   FilePath: "./public/zzinx58.png",
+      //   Key: 'zzx58/2.png',
       // })
       // console.log(upload);
-      // const upload2 = await this.putFileObject({
-      //   ...params,
-      //   Key: '1.png',
-      //   Body: fse.createReadStream(),
-      // })
-      // console.log(upload2);
-      // console.log(fse.createReadStream("../../../public/zzinx58.png"));
     }
   }
 }
+
+const cosService = new CosNodeService();
+cosService.main();

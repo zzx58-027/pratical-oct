@@ -2,7 +2,6 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
-import { FsService } from "./fs/fs.service";
 import { PaintingModule } from "./painting/painting.module";
 import { CosNodeService } from "./painting/cos/cos_node.service";
 import { ConfigModule } from "@nestjs/config";
@@ -17,6 +16,6 @@ import { ConfigModule } from "@nestjs/config";
     PaintingModule,
   ],
   controllers: [],
-  providers: [FsService, CosNodeService],
+  providers: [CosNodeService],
 })
 export class AppModule {}
