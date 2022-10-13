@@ -1,15 +1,30 @@
 import { Injectable } from "@nestjs/common";
-import type {} from "cos-nodejs-sdk-v5";
 import * as COS from "cos-nodejs-sdk-v5";
-import { Stream } from "stream";
+import fse from "fs-extra";
 
+//对象存储（Cloud Object Storage，COS)
 @Injectable()
-export class CosService {
-  private readonly cos = new COS({
-    SecretId: "AKIDFSfiW5PVMyOrLix3vcHrZ7QZVRSUM1Qa",
-    SecretKey: "3UuHdgisunUyFMErIdswqjggiq2EH8nC",
-  });
-  constructor() {}
+export class CosNodeService {
+  private readonly cos: COS;
+  private readonly configurations: {
+    secretId: string | undefined,
+    secretKey: string | undefined,
+  }
+  constructor(
+    // private readonly configService: ConfigService
+    ) {
+    this.configurations = {
+      secretId: process.env.COS_SecretId,
+      secretKey: process.env.COS_SecretKey,
+      // secretId: this.configService.get<string>("COS_SecretId"),
+      // secretKey: this.configService.get<string>("COS_SecretKey")
+    }
+    this.cos = new COS({
+      SecretId: this.configurations.secretId,
+      SecretKey: this.configurations.secretKey,
+    });
+    this.main();
+  }
 
   /* Tips:  
   判断对象为空的方法： for..in.. , JSON.stringify() , Object.keys()
@@ -33,6 +48,9 @@ export class CosService {
     const result = this.cos.getService(params);
     return result;
   }
+
+  //    // SecretId: "AKIDa8GRYQ7gDaouoX5QlGkHh2JQNAnGYcQ2",
+    // SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w",
   /**
    * @param  {COS.PutBucketParams} params
    * @returns Promise
@@ -87,8 +105,16 @@ export class CosService {
    * },
    * }
    */
-  async uploadFile(params: COS.PutObjectParams): Promise<COS.PutObjectResult> {
+  async putFileObject(
+    params: COS.PutObjectParams
+  ): Promise<COS.PutObjectResult> {
     const result = this.cos.putObject(params);
+    return result;
+  }
+  async uploadFile(
+    params: COS.UploadFileParams
+  ): Promise<COS.UploadFileResult> {
+    const result = this.cos.uploadFile(params);
     return result;
   }
   /**
@@ -100,7 +126,7 @@ export class CosService {
   async downloadFileObject(
     params: COS.GetObjectParams
   ): Promise<COS.GetObjectResult> {
-    const result = this.cos.getObject(params);
+    const result = await this.cos.getObject(params);
     return result;
   }
 
@@ -152,41 +178,87 @@ export class CosService {
    * @returns Promise
    * @required Bucket: string, Region: string, Key: string
    * @optional Sign: Boolean //获取带签名的对象URL
+   * @Reminder 当存储桶为私有读时，需要签名
    */
   async getObjectUrl(
-    params: COS.GetObjectUrlParams, isDownload: Boolean
+    params: COS.GetObjectUrlParams,
+    isDownload: Boolean
   ): Promise<string> {
     const result = {
       Url: "",
       downloadFileUrl: "",
     };
-    this.cos.getObjectUrl(params, (err, data) => {
-      if (err) return console.log(err);
-      result.Url = data.Url;
-      result.downloadFileUrl =
-        data.Url +
-        (data.Url.indexOf("?") > -1 ? "&" : "?") +
-        "response-content-disposition=attachment";
+
+    const promiseResult = await new Promise((resolve, rejects) => {
+      this.cos.getObjectUrl(params, (err, data) => {
+        if (err) {
+          console.log(err);
+          rejects(err);
+        }
+        result.Url = data.Url;
+        result.downloadFileUrl =
+          data.Url +
+          (data.Url.indexOf("?") > -1 ? "&" : "?") +
+          "response-content-disposition=attachment";
+        resolve(result);
+      });
     });
+    console.log(promiseResult);
     if (isDownload === true) return result.downloadFileUrl;
     return result.Url;
   }
 
+  async downloadFileLocal(params: { Bucket; Region; Key; FilePath }) {
+    //@ts-ignore
+    const result = this.cos.downloadFile(params);
+    return result;
+  }
+
   async main() {
     const getBucketsResult = await this.getBuckets({});
-    const buckets = getBucketsResult.Buckets.filter(item => item.Name.includes("school-work") === true);
+    const buckets = getBucketsResult.Buckets.filter(
+      (item) => item.Name.includes("school-work") === true
+    );
     console.log(buckets);
-    if(buckets) {
-        const params = {
-            Bucket: buckets[0].Name,
-            Region: buckets[0].Location
-        }
-        const result = await this.getObjectList(params);
-        console.log(result);
+    if (buckets) {
+      const params = {
+        Bucket: buckets[0].Name,
+        Region: buckets[0].Location,
+      };
+      // const objectList = await this.getObjectList(params);
+      // console.log(objectList);
+      // if (objectList) {
+      //   const { Bucket, Region } = params;
+      //   const params1 = {
+      //     Bucket,
+      //     Region,
+      //     Key: objectList.Contents[0].Key,
+      //     Sign: true,
+      //   };
+      // const avatarUrl = await this.getObjectUrl(params1, false);
+      // console.log(avatarUrl);
+      // const fileParams = {
+      //   ...params,
+      //   Key: objectList.Contents[0].Key,
+      //   FilePath: './public/' + objectList.Contents[0].Key,
+      // };
+      //@ts-ignore
+      // const down = await this.cos.downloadFile(fileParams);
+      // console.log(down);
+
+      // const upload = await this.uploadFile({
+      //   ...params,
+      //   Key: '1.png',
+      //   Body: fse.createReadStream("./public/zzinx58.png"),
+      // })
+      // console.log(upload);
+      // const upload2 = await this.putFileObject({
+      //   ...params,
+      //   Key: '1.png',
+      //   Body: fse.createReadStream(),
+      // })
+      // console.log(upload2);
+      // console.log(fse.createReadStream("../../../public/zzinx58.png"));
     }
-    
   }
 }
-
-const main = new CosService();
-main.main();
