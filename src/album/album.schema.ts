@@ -1,6 +1,6 @@
 import { Painting } from "./../painting/painting.schema";
 import { User } from "src/user/user.schema";
-import { Prop, raw } from "@nestjs/mongoose";
+import { Prop, raw, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from "mongoose";
 import * as moment from "moment";
 
@@ -28,3 +28,5 @@ export class Album {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Painting" }] })
   paintings: Painting[];
 }
+
+export const albumSchema = SchemaFactory.createForClass(Album);
