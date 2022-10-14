@@ -1,3 +1,4 @@
+import { Painting } from "./../painting/painting.schema";
 import { User } from "src/user/user.schema";
 import { Prop, raw } from "@nestjs/mongoose";
 import mongoose from "mongoose";
@@ -24,4 +25,6 @@ export class Album {
     })
   )
   createTime: Object;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Painting" }] })
+  paintings: Painting[];
 }

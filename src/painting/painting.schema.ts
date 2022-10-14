@@ -17,7 +17,7 @@ export class Painting {
   @Prop()
   paintingSrc: string;
   //COS/album - Key
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Album" }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Album"}] })
   parentAlbums: Album[];
   @Prop(
     raw({
@@ -35,14 +35,22 @@ export class Painting {
   @Prop(
     raw({
       likeCounts: { type: Number, default: 0 },
-      whoLiked: { type: mongoose.Schema.Types.ObjectId, ref:"User", default: null },
+      whoLiked: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
     })
   )
   likes: Object;
   @Prop(
     raw({
       viewCounts: { type: Number, default: 0 },
-      visitors: { type: User, default: null },
+      visitors: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
     })
   )
   views: Object;

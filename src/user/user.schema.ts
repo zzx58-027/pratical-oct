@@ -42,10 +42,8 @@ export class User {
   )
   userRecentLogin: Object;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Painting" }] })
-  defaultAlbum: Painting[];
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "CreatedAlbum" }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Album" }],
   })
   albums: Album[];
 
