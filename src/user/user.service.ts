@@ -5,6 +5,7 @@ import { User, UserDocument } from "./user.schema";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import * as moment from 'moment';
 
 @Injectable()
 export class UserService {
@@ -66,7 +67,11 @@ export class UserService {
   }
 
   async _updateUserRencentLogin(id:string) {
-    const user = await this.userModel.findOneAndUpdate({_id: id}, {userRecentLogin: Date.now()}).exec();
+    const user = await this.userModel.findOneAndUpdate({_id: id}, {userRecentLogin: {
+      //Date.now() 方法返回自 1970 年 1 月 1 日 00:00:00 (UTC) 到当前时间的毫秒数。
+      timestamp: Date.now(),
+      moment: moment().format('MMMM Do YYYY, h:mm:ss a'),
+    }}).exec();
     return user;
   }
 

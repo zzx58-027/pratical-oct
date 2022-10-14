@@ -261,5 +261,5 @@ export class CosNodeService {
   }
 }
 
-const cosService = new CosNodeService();
-cosService.main();
+// const cosService = new CosNodeService();
+// cosService.main();

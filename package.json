@@ -2,7 +2,7 @@
   "name": "pratical-oct",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "19240134zzx",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -32,6 +32,7 @@
     "class-validator": "^0.13.2",
     "cos-nodejs-sdk-v5": "^2.11.12",
     "fs-extra": "^10.1.0",
+    "moment": "^2.29.4",
     "mongoose": "^6.6.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
