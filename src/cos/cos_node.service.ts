@@ -1,3 +1,4 @@
+import { Painting } from "./../painting/painting.schema";
 import { Injectable } from "@nestjs/common";
 import * as COS from "cos-nodejs-sdk-v5";
 import * as fse from "fs-extra";
@@ -6,13 +7,13 @@ import * as fse from "fs-extra";
 @Injectable()
 export class CosNodeService {
   readonly cos: COS;
-   basicParams: {
-  // private basicParams: {
-    Bucket: string,
-    Region: string
+  basicParams: {
+    // private basicParams: {
+    Bucket: string;
+    Region: string;
   };
-   readonly configurations: {
-  // private readonly configurations: {
+  readonly configurations: {
+    // private readonly configurations: {
     secretId: string | undefined;
     secretKey: string | undefined;
     // Bucket: string | undefined
@@ -20,12 +21,12 @@ export class CosNodeService {
   };
   // private readonly configService: ConfigService
   constructor() {
-    this.configurations = {
+    /*     this.configurations = {
       secretId: process.env.COS_SecretId,
       secretKey: process.env.COS_SecretKey,
       // secretId: this.configService.get<string>("COS_SecretId"),
       // secretKey: this.configService.get<string>("COS_SecretKey")
-    };
+    }; */
     this.cos = new COS({
       // SecretId: this.configurations.secretId,
       // SecretKey: this.configurations.secretKey,
@@ -33,7 +34,7 @@ export class CosNodeService {
       SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w",
     });
     this.basicParams = {
-      Bucket: process.env.COS_Bucket,
+      Bucket: process.env.COS_Bucket_Name,
       Region: process.env.COS_Bucket_Region,
     };
     // this.main();
@@ -67,7 +68,7 @@ export class CosNodeService {
    * @required Bucket: string, Region: string
    */
   async getBuckets(
-    params: COS.GetServiceParams
+    params?: COS.GetServiceParams
   ): Promise<COS.GetServiceResult> {
     const myParams = {
       ...this.basicParams,
@@ -84,7 +85,7 @@ export class CosNodeService {
    * @returns Promise
    * @required Bucket: string, Region: string
    */
-  async putBucket(params: COS.PutBucketParams): Promise<COS.PutBucketResult> {
+  async putBucket(params?: COS.PutBucketParams): Promise<COS.PutBucketResult> {
     const myParams = {
       ...this.basicParams,
       ...params,
@@ -98,7 +99,7 @@ export class CosNodeService {
    * @required Bucket: string, Region: string
    */
   async doesBucketExist(
-    params: COS.HeadBucketParams
+    params?: COS.HeadBucketParams
   ): Promise<COS.HeadBucketResult> {
     const myParams = {
       ...this.basicParams,
@@ -113,7 +114,7 @@ export class CosNodeService {
    * @required Bucket: string, Region: string
    */
   async deleteBucket(
-    params: COS.DeleteBucketParams
+    params?: COS.DeleteBucketParams
   ): Promise<COS.HeadBucketResult> {
     const myParams = {
       ...this.basicParams,
@@ -146,7 +147,7 @@ export class CosNodeService {
    * }
    */
   async putFileObject(
-    params: COS.PutObjectParams
+    params?: COS.PutObjectParams
   ): Promise<COS.PutObjectResult> {
     const myParams = {
       ...this.basicParams,
@@ -161,7 +162,7 @@ export class CosNodeService {
    * @description
    */
   async uploadFile(
-    params: COS.UploadFileParams
+    params?: COS.UploadFileParams
   ): Promise<COS.UploadFileResult> {
     const myParams = {
       ...this.basicParams,
@@ -177,7 +178,7 @@ export class CosNodeService {
    * @optional Range: string, Output: string[filePath]， OutputStream: Stream, Headers[下载限速]
    */
   async downloadFileObject(
-    params: COS.GetObjectParams
+    params?: COS.GetObjectParams
   ): Promise<COS.GetObjectResult> {
     const myParams = {
       ...this.basicParams,
@@ -193,7 +194,7 @@ export class CosNodeService {
    * @building
    */
   async downloadFileObjectByStream(
-    params: COS.GetObjectParams
+    params?: COS.GetObjectParams
   ): Promise<void> {
     const myParams = {
       ...this.basicParams,
@@ -204,11 +205,11 @@ export class CosNodeService {
    * @param  {COS.GetBucketParams} params
    * @returns Promise
    * @required Bucket: string, Region: string
-   * @optional Prefix: string, Delimiter: string, Marker: marker, MaxKeys: number
+   * @optional Prefix: string, Key: string, Delimiter: string, Marker: marker, MaxKeys: number
    * @optionsDescrption
    */
   async getObjectList(
-    params: COS.GetBucketParams
+    params?: COS.GetBucketParams
   ): Promise<COS.GetBucketResult> {
     const myParams = {
       ...this.basicParams,
@@ -224,7 +225,7 @@ export class CosNodeService {
    * @optional Objects: Array[Objects], Prefix: string, MaxKeys: number
    */
   async deleteObject(
-    params: COS.DeleteObjectParams
+    params?: COS.DeleteObjectParams
   ): Promise<COS.DeleteObjectResult> {
     const myParams = {
       ...this.basicParams,
@@ -233,13 +234,27 @@ export class CosNodeService {
     const result = this.cos.deleteObject(myParams);
     return result;
   }
+
+  async deleteMultipleObjects(
+    objects: Array<{ Key: COS.Key }>,
+    params?: COS.DeleteMultipleObjectParams
+  ) {
+    const myParams = {
+      ...this.basicParams,
+      Objects: objects,
+      ...params,
+    };
+    const result = await this.cos.deleteMultipleObject(myParams);
+    return result;
+  }
+
   /**
    * @param  {COS.HeadObjectParams} params
    * @returns Promise
    * @required Bucket: string, Region: string, Key: string
    */
   async doesObjectExist(
-    params: COS.HeadObjectParams
+    params?: COS.HeadObjectParams
   ): Promise<COS.HeadObjectResult> {
     const myParams = {
       ...this.basicParams,
@@ -256,8 +271,8 @@ export class CosNodeService {
    * @Reminder 当存储桶为私有读时，需要签名
    */
   async getObjectUrl(
-    params: COS.GetObjectUrlParams,
-    isDownload: Boolean
+    isDownload: Boolean,
+    params?: COS.GetObjectUrlParams
   ): Promise<string> {
     const myParams = {
       ...this.basicParams,
@@ -286,61 +301,160 @@ export class CosNodeService {
     if (isDownload === true) return result.downloadFileUrl;
     return result.Url;
   }
-
-  async downloadFileLocal(params: { Bucket; Region; Key; FilePath }) {
+  /**
+   * @param  {{Bucket;Region;Key;FilePath}} params
+   * @building
+   */
+  async downloadFileLocal(params?: { Bucket; Region; Key; FilePath }) {
     const myParams = {
       ...this.basicParams,
       ...params,
     };
     //@ts-ignore
-    const result = this.cos.downloadFile(myParams);
+    const result = await this.cos.downloadFile(myParams);
     return result;
   }
 
+  //move file
+  //senior method
+  //'school-work-1308651335.cos.ap-shanghai.myqcloud.com/zzx58/zzx58.png'
+  async copyFileTo(
+    targetFullPath: string,
+    sourceFullPath: string,
+    params?: COS.SliceCopyFileParams
+  ) {
+    const myParams = {
+      ...this.basicParams,
+      Key: `${targetFullPath}`,
+      ...params,
+    };
+    const actualParams = {
+      ...myParams,
+      CopySource: `${this.basicParams.Bucket}.cos.${this.basicParams.Region}.myqcloud.com/${sourceFullPath}`,
+    }
+    const result = await this.cos.sliceCopyFile(actualParams);
+    return result;
+  }
+
+  async moveFileTo(
+    targetFolderPath: string,
+    newFileName: string,
+    sourceFolderPath: string,
+    sourceFileName: string,
+    params?: COS.SliceCopyFileParams
+  ) {
+    const myParams = {
+      ...this.basicParams,
+      Key: `${targetFolderPath}/${newFileName}`,
+      CopySource: `${this.basicParams.Bucket}.cos.${this.basicParams.Region}.myqcloud.com/${sourceFolderPath}/${sourceFileName}`,
+      ...params,
+    };
+    const copyResult = await this.cos.sliceCopyFile(myParams);
+    const deleteResult = await this.deleteObject({
+      ...this.basicParams,
+      Key: `${sourceFolderPath}/${sourceFileName}`,
+    });
+    return [copyResult, deleteResult];
+  }
+
+  async copyFolderTo(
+    objects: Array<{
+      Key: COS.Key;
+    }>,
+    targetFolderPath: string,
+    param?: COS.SliceCopyFileParams
+  ) {
+    const copyFolderResult = await Promise.all(
+      objects.map(async (item) => {
+        const newFileName = item.Key.substring(item.Key.indexOf("/"));
+        const targetFullPath = `${targetFolderPath}/${newFileName}`;
+        const sourceFullPath = item.Key;
+        const itemResult = await this.copyFileTo(
+          targetFullPath,
+          sourceFullPath
+        );
+        return itemResult;
+      })
+    );
+    return copyFolderResult;
+  }
+
+  async moveFolderTo(
+    targetFolderPath: string,
+    sourceFolderPath: string,
+    param?: COS.SliceCopyFileParams
+  ) {
+    const objects = (
+      await this.getObjectList({
+        ...this.basicParams,
+        Prefix: sourceFolderPath,
+      })
+    ).Contents.map((item) => {
+      return { Key: item.Key };
+    });
+    const copyFolderResult = await this.copyFolderTo(
+      objects,
+      targetFolderPath,
+    );
+    const deleteFolderResult = await this.deleteMultipleObjects(objects);
+    return {
+      copyFolderResult,
+      deleteFolderResult,
+    };
+  }
+
   async main() {
-    // const getBucketsResult = await this.getBuckets({});
-    // const buckets = getBucketsResult.Buckets.filter(
-    //   (item) => item.Name.includes("school-work") === true
-    // );
+    /* 
+    //获取符合条件的buckets
+    // const getBucketsResult = await this.getSpecificBuckets("school-work");
+    // console.log(getBucketsResult);
+    */
+    /* 
+    //获取特定前缀开头的album中内容
+    // const getObjectList = await this.getObjectList({
+    //   ...this.basicParams,
+    //   Prefix: "zzx58"
+    // });
+    // console.log(getObjectList);
+     */
     // if (buckets) {
-      // const params = {
-      //   Bucket: buckets[0].Name,
-      //   Region: buckets[0].Location,
-      // };
+    // const params = {
+    //   Bucket: buckets[0].Name,
+    //   Region: buckets[0].Location,
+    // };
     //   const objectList = await this.getObjectList({
     //     ...params,
     //     Prefix: "zzx58",
     //   });
-      // console.log(objectList);
-      // if (objectList) {
-      //   const { Bucket, Region } = params;
-      //   const params1 = {
-      //     Bucket,
-      //     Region,
-      //     Key: objectList.Contents[0].Key,
-      //     Sign: true,
-      //   };
-      // const avatarUrl = await this.getObjectUrl(params1, false);
-      // console.log(avatarUrl);
-      // const fileParams = {
-      //   ...params,
-      //   Key: objectList.Contents[0].Key,
-      //   FilePath: './public/' + objectList.Contents[0].Key,
-      // };
-      //@ts-ignore
-      // const down = await this.cos.downloadFile(fileParams);
-      // console.log(down);
+    // console.log(objectList);
+    // if (objectList) {
+    //   const { Bucket, Region } = params;
+    //   const params1 = {
+    //     Bucket,
+    //     Region,
+    //     Key: objectList.Contents[0].Key,
+    //     Sign: true,
+    //   };
+    // const avatarUrl = await this.getObjectUrl(params1, false);
+    // console.log(avatarUrl);
+    // const fileParams = {
+    //   ...params,
+    //   Key: objectList.Contents[0].Key,
+    //   FilePath: './public/' + objectList.Contents[0].Key,
+    // };
+    //@ts-ignore
+    // const down = await this.cos.downloadFile(fileParams);
+    // console.log(down);
 
-      // uploadFile senior method
-      const upload = await this.uploadFile({
-        ...this.basicParams,
-        FilePath: "./public/zzinx58.png",
-        Key: 'zzx58/1.png',
-      })
-      console.log(upload);
+    // uploadFile senior method
+    // Location: 'school-work-1308651335.cos.ap-shanghai.myqcloud.com/zzx58/zzx58.png',
+    const upload = await this.uploadFile({
+      ...this.basicParams,
+      FilePath: "./public/zzinx58.png",
+      Key: "1095568627/1-3png",
+    });
+    console.log(upload);
+
     // }
   }
 }
-
-// const cosService = new CosNodeService();
-// cosService.main();
