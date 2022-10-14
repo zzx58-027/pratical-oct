@@ -3,8 +3,9 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { PaintingModule } from "./painting/painting.module";
-import { CosNodeService } from "./painting/cos/cos_node.service";
+import { CosNodeService } from "./cos/cos_node.service";
 import { ConfigModule } from "@nestjs/config";
+import { AlbumModule } from './album/album.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ cache: true }),
@@ -14,6 +15,7 @@ import { ConfigModule } from "@nestjs/config";
     AuthModule,
     UserModule,
     PaintingModule,
+    AlbumModule,
   ],
   controllers: [],
   providers: [CosNodeService],

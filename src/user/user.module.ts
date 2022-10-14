@@ -1,4 +1,4 @@
-import { EncryptService } from './../auth/encrypt/encrypt.service';
+import { EncryptService } from "./../auth/encrypt/encrypt.service";
 import { User, userSchema } from "./user.schema";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserService } from "./user.service";

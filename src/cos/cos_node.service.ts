@@ -1,18 +1,25 @@
 import { Injectable } from "@nestjs/common";
 import * as COS from "cos-nodejs-sdk-v5";
-import * as fse from "fs-extra"
+import * as fse from "fs-extra";
 
 //对象存储（Cloud Object Storage，COS)
 @Injectable()
 export class CosNodeService {
-  private readonly cos: COS;
-  private readonly configurations: {
+  readonly cos: COS;
+   basicParams: {
+  // private basicParams: {
+    Bucket: string,
+    Region: string
+  };
+   readonly configurations: {
+  // private readonly configurations: {
     secretId: string | undefined;
     secretKey: string | undefined;
+    // Bucket: string | undefined
+    // Region: string | undefined
   };
   // private readonly configService: ConfigService
   constructor() {
-  // constructor() {
     this.configurations = {
       secretId: process.env.COS_SecretId,
       secretKey: process.env.COS_SecretKey,
@@ -23,8 +30,13 @@ export class CosNodeService {
       // SecretId: this.configurations.secretId,
       // SecretKey: this.configurations.secretKey,
       SecretId: "AKIDa8GRYQ7gDaouoX5QlGkHh2JQNAnGYcQ2",
-      SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w"
+      SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w",
     });
+    this.basicParams = {
+      Bucket: process.env.COS_Bucket,
+      Region: process.env.COS_Bucket_Region,
+    };
+    // this.main();
   }
 
   /* Tips:  
@@ -37,6 +49,17 @@ export class CosNodeService {
  */
 
   //存储桶操作
+
+  async getSpecificBuckets(
+    bucketName: string
+  ): Promise<{ Name: string; Location: string; CreationDate: string }> {
+    const getBucketsResult = await this.getBuckets({});
+    const buckets = getBucketsResult.Buckets.filter(
+      (item) => item.Name.includes(bucketName) === true
+    );
+    return buckets[0];
+  }
+
   /**
    * @param  {COS.GetServiceParams} params
    * @description 如果不传参数进入对象，则返回所有区域的Buckets.
@@ -46,7 +69,11 @@ export class CosNodeService {
   async getBuckets(
     params: COS.GetServiceParams
   ): Promise<COS.GetServiceResult> {
-    const result = this.cos.getService(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.getService(myParams);
     return result;
   }
 
@@ -58,7 +85,11 @@ export class CosNodeService {
    * @required Bucket: string, Region: string
    */
   async putBucket(params: COS.PutBucketParams): Promise<COS.PutBucketResult> {
-    const result = this.cos.putBucket(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.putBucket(myParams);
     return result;
   }
   /**
@@ -69,7 +100,11 @@ export class CosNodeService {
   async doesBucketExist(
     params: COS.HeadBucketParams
   ): Promise<COS.HeadBucketResult> {
-    const result = this.cos.headBucket(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.headBucket(myParams);
     return result;
   }
   /**
@@ -80,7 +115,11 @@ export class CosNodeService {
   async deleteBucket(
     params: COS.DeleteBucketParams
   ): Promise<COS.HeadBucketResult> {
-    const result = this.cos.deleteBucket(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.deleteBucket(myParams);
     return result;
   }
 
@@ -109,13 +148,26 @@ export class CosNodeService {
   async putFileObject(
     params: COS.PutObjectParams
   ): Promise<COS.PutObjectResult> {
-    const result = this.cos.putObject(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.putObject(myParams);
     return result;
   }
+  /**
+   * @param  {COS.UploadFileParams} params
+   * @returns Promise
+   * @description
+   */
   async uploadFile(
     params: COS.UploadFileParams
   ): Promise<COS.UploadFileResult> {
-    const result = this.cos.uploadFile(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.uploadFile(myParams);
     return result;
   }
   /**
@@ -127,7 +179,11 @@ export class CosNodeService {
   async downloadFileObject(
     params: COS.GetObjectParams
   ): Promise<COS.GetObjectResult> {
-    const result = await this.cos.getObject(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = await this.cos.getObject(myParams);
     return result;
   }
 
@@ -138,18 +194,27 @@ export class CosNodeService {
    */
   async downloadFileObjectByStream(
     params: COS.GetObjectParams
-  ): Promise<void> {}
+  ): Promise<void> {
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+  }
   /**
    * @param  {COS.GetBucketParams} params
    * @returns Promise
    * @required Bucket: string, Region: string
    * @optional Prefix: string, Delimiter: string, Marker: marker, MaxKeys: number
-   * @optionsDescrption 
+   * @optionsDescrption
    */
   async getObjectList(
     params: COS.GetBucketParams
   ): Promise<COS.GetBucketResult> {
-    const result = this.cos.getBucket(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.getBucket(myParams);
     return result;
   }
   /**
@@ -161,7 +226,11 @@ export class CosNodeService {
   async deleteObject(
     params: COS.DeleteObjectParams
   ): Promise<COS.DeleteObjectResult> {
-    const result = this.cos.deleteObject(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.deleteObject(myParams);
     return result;
   }
   /**
@@ -172,7 +241,11 @@ export class CosNodeService {
   async doesObjectExist(
     params: COS.HeadObjectParams
   ): Promise<COS.HeadObjectResult> {
-    const result = this.cos.headObject(params);
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
+    const result = this.cos.headObject(myParams);
     return result;
   }
   /**
@@ -186,13 +259,17 @@ export class CosNodeService {
     params: COS.GetObjectUrlParams,
     isDownload: Boolean
   ): Promise<string> {
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
     const result = {
       Url: "",
       downloadFileUrl: "",
     };
 
     const promiseResult = await new Promise((resolve, rejects) => {
-      this.cos.getObjectUrl(params, (err, data) => {
+      this.cos.getObjectUrl(myParams, (err, data) => {
         if (err) {
           console.log(err);
           rejects(err);
@@ -211,26 +288,30 @@ export class CosNodeService {
   }
 
   async downloadFileLocal(params: { Bucket; Region; Key; FilePath }) {
+    const myParams = {
+      ...this.basicParams,
+      ...params,
+    };
     //@ts-ignore
-    const result = this.cos.downloadFile(params);
+    const result = this.cos.downloadFile(myParams);
     return result;
   }
 
   async main() {
-    const getBucketsResult = await this.getBuckets({});
-    const buckets = getBucketsResult.Buckets.filter(
-      (item) => item.Name.includes("school-work") === true
-    );
-    if (buckets) {
-      const params = {
-        Bucket: buckets[0].Name,
-        Region: buckets[0].Location,
-      };
-      const objectList = await this.getObjectList({
-        ...params,
-        Prefix: 'zzx58'
-      });
-      console.log(objectList);
+    // const getBucketsResult = await this.getBuckets({});
+    // const buckets = getBucketsResult.Buckets.filter(
+    //   (item) => item.Name.includes("school-work") === true
+    // );
+    // if (buckets) {
+      // const params = {
+      //   Bucket: buckets[0].Name,
+      //   Region: buckets[0].Location,
+      // };
+    //   const objectList = await this.getObjectList({
+    //     ...params,
+    //     Prefix: "zzx58",
+    //   });
+      // console.log(objectList);
       // if (objectList) {
       //   const { Bucket, Region } = params;
       //   const params1 = {
@@ -250,14 +331,14 @@ export class CosNodeService {
       // const down = await this.cos.downloadFile(fileParams);
       // console.log(down);
 
-      //uploadFile senior method
-      // const upload = await this.uploadFile({
-      //   ...params,
-      //   FilePath: "./public/zzinx58.png",
-      //   Key: 'zzx58/2.png',
-      // })
-      // console.log(upload);
-    }
+      // uploadFile senior method
+      const upload = await this.uploadFile({
+        ...this.basicParams,
+        FilePath: "./public/zzinx58.png",
+        Key: 'zzx58/1.png',
+      })
+      console.log(upload);
+    // }
   }
 }
 
