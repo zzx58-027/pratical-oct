@@ -22,10 +22,11 @@ export class User {
   @Prop(
     raw({
       //Date.now() 方法返回自 1970 年 1 月 1 日 00:00:00 (UTC) 到当前时间的毫秒数。
-      timestamp: { type: String, default: Date.now() },
+      timestamp: { type: String, default: Date.now(), immutable: true },
       moment: {
         type: String,
         default: moment().format("MMMM Do YYYY, h:mm:ss a"),
+        immutable: true,
       },
     })
   )
