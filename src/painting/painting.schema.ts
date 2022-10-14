@@ -1,3 +1,4 @@
+import { Album } from "./../album/album.schema";
 import { Prop, raw, Schema, SchemaFactory } from "@nestjs/mongoose";
 import * as moment from "moment";
 import mongoose, { Document } from "mongoose";
@@ -7,8 +8,8 @@ export type PaintingDocument = Painting & Document;
 
 @Schema()
 export class Painting {
-  @Prop()
-  creator: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User" })
+  creator: User;
   @Prop()
   description: string;
   @Prop()
@@ -16,8 +17,8 @@ export class Painting {
   @Prop()
   paintingSrc: string;
   //COS/album - Key
-  @Prop({ type: String, default: "defaultAlbum" })
-  parentAlbums: string;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Album" }] })
+  parentAlbums: Album[];
   @Prop(
     raw({
       //Date.now() 方法返回自 1970 年 1 月 1 日 00:00:00 (UTC) 到当前时间的毫秒数。
@@ -30,10 +31,21 @@ export class Painting {
     })
   )
   paintingCreateTime: Object;
-  @Prop()
-  likes: number;
-  @Prop()
-  views: number;
+  //likesType
+  @Prop(
+    raw({
+      likeCounts: { type: Number, default: 0 },
+      whoLiked: { type: mongoose.Schema.Types.ObjectId, ref:"User", default: null },
+    })
+  )
+  likes: Object;
+  @Prop(
+    raw({
+      viewCounts: { type: Number, default: 0 },
+      visitors: { type: User, default: null },
+    })
+  )
+  views: Object;
 
   @Prop([String])
   paintingLabels: string[];

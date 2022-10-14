@@ -3,7 +3,7 @@ import { Prop, raw } from "@nestjs/mongoose";
 import mongoose from "mongoose";
 import * as moment from "moment";
 
-export class CreatedAlbum {
+export class Album {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User" })
   creator: User;
   @Prop()

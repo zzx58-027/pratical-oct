@@ -1,4 +1,4 @@
-import { CreatedAlbum } from "./../album/album.schema";
+import { Album } from "./../album/album.schema";
 import mongoose from "mongoose";
 import { Painting } from "./../painting/painting.schema";
 import { Document } from "mongoose";
@@ -47,7 +47,7 @@ export class User {
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "CreatedAlbum" }],
   })
-  albums: CreatedAlbum[];
+  albums: Album[];
 
   // @Prop()
   // colletedAlbum:
