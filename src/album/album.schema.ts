@@ -1,9 +1,9 @@
 import { Painting } from "./../painting/painting.schema";
 import { User } from "src/user/user.schema";
 import { Prop, raw, SchemaFactory } from "@nestjs/mongoose";
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import * as moment from "moment";
-
+export type AlbumDocument = Album & Document;
 export class Album {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User" })
   creator: User;

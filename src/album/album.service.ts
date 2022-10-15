@@ -1,7 +1,10 @@
+import { Album, AlbumDocument } from "./album.schema";
+import { Model } from "mongoose";
 import { CosNodeService } from "./../cos/cos_node.service";
 
 import { Injectable } from "@nestjs/common";
 import { DeleteObjectResult, PutObjectResult } from "cos-nodejs-sdk-v5";
+import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
 export class AlbumService {
@@ -9,12 +12,16 @@ export class AlbumService {
     Bucket: string;
     Region: string;
   };
-  constructor(private readonly cosService: CosNodeService) {
+  constructor(
+    private readonly cosService: CosNodeService,
+    @InjectModel(Album.name)
+    private readonly albumModel: Model<AlbumDocument>
+  ) {
     this.basicParams = {
       Bucket: process.env.COS_Bucket_Name,
       Region: process.env.COS_Bucket_Region,
     };
-    this.main();
+    // this.main();
   }
 
   //创建目录
@@ -29,10 +36,10 @@ export class AlbumService {
     const myParams = {
       ...this.basicParams,
       Body: "",
-      Key: albumName,
+      Key: `${albumName}/`,
       ...inputParams,
     };
-    const result = this.cosService.cos.putObject(myParams);
+    const result = await this.cosService.cos.putObject(myParams);
     return result;
   }
 
@@ -71,7 +78,7 @@ export class AlbumService {
   ) {
     const myParams = {
       ...this.basicParams,
-      Prefix: albumName,
+      Prefix: albumName + "/",
       ...inputParams,
     };
     const result = await this.cosService.getObjectList(myParams);
@@ -92,7 +99,6 @@ export class AlbumService {
     /* 
     const albumContent = await this.getAlbumContent("zzx58");
     console.log(albumContent); */
-
     /* 
     const copyFolder = await this.cosService.copyFileTo(
       "1095568627/",
@@ -100,7 +106,6 @@ export class AlbumService {
       "zzx58/1.png"
     );
     console.log(copyFolder); */
-
     /* 
     const result = await this.cosService.moveFileTo(
       "1095568627/",
@@ -108,15 +113,12 @@ export class AlbumService {
       "zzx58/1.png"
     )
     console.log(result); */
-
     /* 
     const result = await this.cosService.copyFolderTo("zzx58", "1095568627");
     // const result = await this.cosService.copyFolderTo("1095568627", "zzx58");
     // const result = await this.cosService.copyFolderTo("1095568628", "zzx58");
     console.log(result); */
-
-    const result = await this.changeAlbumNameTo("1095568627", "zzx58");
-    console.log(result);
-    
+    // const result = await this.changeAlbumNameTo("1095568627", "zzx58");
+    // console.log(result);
   }
 }

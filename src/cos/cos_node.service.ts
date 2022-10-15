@@ -21,17 +21,17 @@ export class CosNodeService {
   };
   // private readonly configService: ConfigService
   constructor() {
-    /*     this.configurations = {
+        this.configurations = {
       secretId: process.env.COS_SecretId,
       secretKey: process.env.COS_SecretKey,
       // secretId: this.configService.get<string>("COS_SecretId"),
       // secretKey: this.configService.get<string>("COS_SecretKey")
-    }; */
+    };
     this.cos = new COS({
-      // SecretId: this.configurations.secretId,
-      // SecretKey: this.configurations.secretKey,
-      SecretId: "AKIDa8GRYQ7gDaouoX5QlGkHh2JQNAnGYcQ2",
-      SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w",
+      SecretId: this.configurations.secretId,
+      SecretKey: this.configurations.secretKey,
+      // SecretId: "AKIDa8GRYQ7gDaouoX5QlGkHh2JQNAnGYcQ2",
+      // SecretKey: "SAuU42qQlrId52tdHpLl17C6sfKm252w",
     });
     this.basicParams = {
       Bucket: process.env.COS_Bucket_Name,
@@ -451,7 +451,7 @@ export class CosNodeService {
     const upload = await this.uploadFile({
       ...this.basicParams,
       FilePath: "./public/zzinx58.png",
-      Key: "1095568627/1-3png",
+      Key: "1095568627/1-1png",
     });
     console.log(upload);
 
